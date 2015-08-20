@@ -21,7 +21,7 @@ testWikiHamming3 = assertEqual
 
 testWikiHamming4 = assertEqual
     "Hamming distance between '2173896' and '2233796' is 3."
-    2 (hammingDist "2173896" "2233796")
+    3 (hammingDist "2173896" "2233796")
 
 main = defaultMain tests
 
