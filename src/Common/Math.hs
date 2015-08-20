@@ -63,13 +63,14 @@ findKNearest k dist xs neighbors
 --
 -- This should be a valid instance of 'Dist' and so can be used for finding the
 -- nearest neighbors of a 'String' using 'kNearest'.
-hammingDist :: String -> String -> Int
+hammingDist :: Eq a => [a] -> [a]-> Int
 hammingDist a b
-    | length a == length b = sum $
-                             map (\ (x, y) -> hammingWeight $ xor (ord x) (ord y) ) $
-                             zip a b
+    | length a == length b = sum $ zipWith (curry same) a b
     | otherwise            = error "Length of both strings must be equal"
-    where hammingWeight = popCount
+    where
+        same (x, y)
+            | x == y    = 0
+            | otherwise = 1
 
 -- |Find the _k_ 'Strings' with the nearest Hamming distance
 -- ('hammingDist') to the target.
