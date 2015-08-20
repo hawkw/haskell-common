@@ -9,19 +9,19 @@ import Common.Math
 
 testWikiHamming1 = assertEqual
     "Hamming distance between 'karolin' and 'kathrin' is 3."
-    3 (hamming "karolin" "kathrin")
+    3 (hammingDist "karolin" "kathrin")
 
 testWikiHamming2 = assertEqual
     "Hamming distance between 'karolin' and 'kerstin' is 3"
-    3 (hamming "karolin" "kerstin")
+    3 (hammingDist "karolin" "kerstin")
 
 testWikiHamming3 = assertEqual
     "Hamming distance between '1011101' and '1001001' is 2"
-    2 (hamming "1011101" "1001001")
+    2 (hammingDist "1011101" "1001001")
 
 testWikiHamming4 = assertEqual
     "Hamming distance between '2173896' and '2233796' is 3."
-    2 (hamming "2173896" "2233796")
+    2 (hammingDist "2173896" "2233796")
 
 main = defaultMain tests
 
