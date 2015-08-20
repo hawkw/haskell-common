@@ -1,4 +1,9 @@
+language: haskell
 sudo: false
+
+cache:
+  directories:
+  - $HOME/.stack/
 
 before_install:
   # stack
@@ -18,8 +23,8 @@ addons:
     - ghc-7.8.4
 
 install:
-  - ./travis_long stack --no-terminal --skip-ghc-check setup
-  - ./travis_long stack --no-terminal --skip-ghc-check test --only-snapshot
+  - stack setup --no-terminal
+  - stack build --only-snapshot --no-terminal
 
 script:
-  - stack --no-terminal --skip-ghc-check test
+  - stack test --no-terminal
