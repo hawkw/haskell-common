@@ -31,10 +31,14 @@ type Dist a = a -> a -> Int
 -- |Tail-recursive _k_-nearest-neighbor search over a list of `a`s,
 -- where `a` is an instance of Eq.
 --
+-- The resultant list should be sorted by nearness to the target, with
+-- the first element being the nearest neighbor and the last element being
+-- the least near neighbor.
+--
 -- This should be the fastest possible implementation possible without
 -- pre-processing the imputs.
 --
--- Based on my Scala implementation <https://github.com/hawkw/scala-common here>.
+-- Based on my Scala implementation at <https://github.com/hawkw/scala-common>.
 kNearest :: Eq a
          => Int    -- ^Value of _k_ (the number of neighbors to find)
          -> Dist a -- ^Distance function (instance of 'Dist')
@@ -42,20 +46,17 @@ kNearest :: Eq a
          -> [a]    -- ^The list of values to search for neighbors
          -> [a]
 kNearest 0 _    _ _   = []
-kNearest k dist x xs  = findKNearest k' minDist (delete nearest xs) [nearest]
+kNearest k dist x xs  = findKNearest (k - 1) (delete nearest xs) [nearest]
     where nearest     = minimumBy minDist xs
-          k'          = k - 1
-          minDist a b = compare (distTo a) (distTo b)
-          distTo      = dist x
-
--- |Helper function for 'kNearest' (performs the actual recursive search)
-findKNearest :: Eq a =>  Int -> (a -> a -> Ordering) -> [a] -> [a] -> [a]
-findKNearest k dist xs neighbors
-    | k == 0      = nearest : neighbors
-    | otherwise   = findKNearest k' dist xs' (nearest : neighbors)
-    where nearest = minimumBy dist xs
-          xs'     = delete nearest xs
-          k'      = k - 1
+          minDist a b = compare (dist x a) (dist x b)
+          -- Performs the actual recursive search
+          findKNearest k' xs' neighbors
+              | k' == 0   = neighbors'
+              | otherwise = findKNearest k'' xs'' neighbors'
+              where nearest'   = minimumBy minDist xs'
+                    neighbors' = neighbors ++ [nearest']
+                    xs''       = delete nearest' xs'
+                    k''        = k' - 1
 
 -- |Compare the Hamming distance of two strings.
 --
@@ -71,6 +72,15 @@ hammingDist a b
         same (x, y)
             | x == y    = 0
             | otherwise = 1
+
+lexicalDist :: String -> String -> Int
+lexicalDist a b
+    | length a == length b = sum $ zipWith (curry lexDist) a b
+    | otherwise            = error "Length of both strings must be equal"
+    where lexDist (x, y) = ord x - ord y
+
+-- zeroPad :: String -> String -> (String, String)
+-- zeroPad a b
 
 -- |Find the _k_ 'Strings' with the nearest Hamming distance
 -- ('hammingDist') to the target.
