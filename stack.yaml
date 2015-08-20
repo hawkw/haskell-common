@@ -1,5 +1,6 @@
 flags: {}
 packages:
 - '.'
-extra-deps: []
+extra-deps:
+  - QuickCheck-2.6
 resolver: lts-3.1
