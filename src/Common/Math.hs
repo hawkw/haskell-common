@@ -25,7 +25,8 @@ import Data.Char
 
 -------------------------------------------------------------------------------
 
--- |Type for a distance function over `a`, returning the distance as an integer
+-- |Type for a distance function over `a`, returning the distance as a value
+-- of type _b_ : Ord
 type Dist a b = Ord b => a -> a -> b
 
 -- |Tail-recursive _k_-nearest-neighbor search over a list of `a`s,
@@ -58,12 +59,12 @@ kNearest k dist x xs  = findKNearest (k - 1) (delete nearest xs) [nearest]
                     xs''       = delete nearest' xs'
                     k''        = k' - 1
 
--- |Compare the Hamming distance of two strings.
+-- |Compare the Hamming distance of two lists of the same type.
 --
 -- The strings are required to be of equal length.
 --
--- This should be a valid instance of 'Dist' and so can be used for finding the
--- nearest neighbors of a 'String' using 'kNearest'.
+-- This is e a valid instance of 'Dist' and so can be used for finding the
+-- nearest neighbors of a list using 'kNearest'.
 hammingDist :: Eq a => [a] -> [a] -> Int
 hammingDist a b
     | length a == length b = sum $ zipWith (curry same) a b
@@ -79,18 +80,16 @@ lexicalDist a b
     | otherwise            = error "Length of both strings must be equal"
     where lexDist (x, y) = ord x - ord y
 
--- zeroPad :: String -> String -> (String, String)
--- zeroPad a b
-
 -- |Find the _k_ 'Strings' with the nearest Hamming distance
 -- ('hammingDist') to the target.
 --
--- This is just a batteries-included version of 'kNearest' for 'String's.
+-- This is just a batteries-included version of 'kNearest' for 'List's.
 --
 -- In order to compute Hamming distance, all the strings must be of equal
 -- length.
-kHammingNearest :: Int      -- ^Value of _k_ (the number of neighbors to find)
-                -> String   -- ^Target to find the nearest neighbors of
-                -> [String] -- ^List of strings to search for neighbors
-                -> [String]
+kHammingNearest :: Eq a
+                => Int   -- ^Value of _k_ (the number of neighbors to find)
+                -> [a]   -- ^Target to find the nearest neighbors of
+                -> [[a]] -- ^List of strings to search for neighbors
+                -> [[a]]
 kHammingNearest k = kNearest k hammingDist
