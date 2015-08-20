@@ -70,7 +70,7 @@ hamming a b
                              zip a b
     | otherwise            = error "Length of both strings must be equal"
     where setBits 0 = 0
-          setBits x = 1 + setBits x .&. (x - 1)
+          setBits x = 1 + setBits ( x .&. (x - 1) )
 
 -- |Find the _k_ 'Strings' with the nearest 'Hamming' distance to the target.
 --
