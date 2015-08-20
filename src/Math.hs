@@ -13,11 +13,14 @@ General-purpose math and stats functions. I'm implementing these mostly for fun
 and practice, but they may occasionally be useful.
 -}
 
-module Common.Math ( kNearest ) where
+module Common.Math ( kNearest
+                   , hamming ) where
 
 -------------------------------------------------------------------------------
 
 import Data.List
+import Data.Bits
+import Data.Char
 
 -------------------------------------------------------------------------------
 
@@ -37,6 +40,7 @@ kNearest :: Eq a
          -> a      -- ^The value to search for the nearest neighbors to.
          -> [a]    -- ^The list of values to search for neighbors
          -> [a]
+kNearest 0 _    _ _   = []
 kNearest k dist x xs  = findKNearest k' minDist (delete nearest xs) [nearest]
     where nearest     = minimumBy minDist xs
           k'          = k - 1
@@ -45,9 +49,36 @@ kNearest k dist x xs  = findKNearest k' minDist (delete nearest xs) [nearest]
 
 -- |Helper function for 'kNearest' (performs the actual recursive search)
 findKNearest :: Eq a =>  Int -> (a -> a -> Ordering) -> [a] -> [a] -> [a]
-findKNearest k dist xs neighbors = case k of
-    0 -> nearest : neighbors
-    _ -> findKNearest k' dist xs' (nearest : neighbors)
-    where nearest    = minimumBy dist xs
-          xs'        = delete nearest xs
-          k'         = k - 1
+findKNearest k dist xs neighbors
+    | k == 0      = nearest : neighbors
+    | otherwise   = findKNearest k' dist xs' (nearest : neighbors)
+    where nearest = minimumBy dist xs
+          xs'     = delete nearest xs
+          k'      = k - 1
+
+-- |Compare the Hamming distance of two strings.
+--
+-- The strings are required to be of equal length.
+--
+-- This should be a valid instance of 'Dist' and so can be used for finding the
+-- nearest neighbors of a 'String' using 'kNearest'.
+hamming :: String -> String -> Int
+hamming a b
+    | length a == length b = sum $
+                             map (\ (x, y) -> setBits $ xor (ord x) (ord y) ) $
+                             zip a b
+    | otherwise            = error "Length of both strings must be equal"
+    where setBits 0 = 0
+          setBits x = 1 + setBits x .&. (x - 1)
+
+-- |Find the _k_ 'Strings' with the nearest 'Hamming' distance to the target.
+--
+-- This is just a batteries-included version of 'kNearest' for 'String's.
+--
+-- In order to compute Hamming distance, all the strings must be of equal
+-- length.
+kHammingNearest :: Int      -- ^Value of _k_ (the number of neighbors to find)
+                -> String   -- ^Target to find the nearest neighbors of
+                -> [String] -- ^List of strings to search for neighbors
+                -> [String]
+kHammingNearest k = kNearest k hamming
