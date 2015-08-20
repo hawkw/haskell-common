@@ -2,5 +2,7 @@ flags: {}
 packages:
 - '.'
 extra-deps:
-  - QuickCheck-2.6
+  - HUnit-1.2.5.2
+  - test-framework-0.8.1.1
+  - test-framework-hunit-0.3.0.1
 resolver: lts-3.1

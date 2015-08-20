@@ -14,7 +14,8 @@ and practice, but they may occasionally be useful.
 -}
 
 module Common.Math ( kNearest
-                   , hamming ) where
+                   , hamming
+                   , kHammingNearest ) where
 
 -------------------------------------------------------------------------------
 
