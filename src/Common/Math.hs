@@ -26,7 +26,7 @@ import Data.Char
 -------------------------------------------------------------------------------
 
 -- |Type for a distance function over `a`, returning the distance as an integer
-type Dist a = a -> a -> Int
+type Dist a b = Ord b => a -> a -> b
 
 -- |Tail-recursive _k_-nearest-neighbor search over a list of `a`s,
 -- where `a` is an instance of Eq.
@@ -39,16 +39,16 @@ type Dist a = a -> a -> Int
 -- pre-processing the imputs.
 --
 -- Based on my Scala implementation at <https://github.com/hawkw/scala-common>.
-kNearest :: Eq a
-         => Int    -- ^Value of _k_ (the number of neighbors to find)
-         -> Dist a -- ^Distance function (instance of 'Dist')
-         -> a      -- ^The value to search for the nearest neighbors to.
-         -> [a]    -- ^The list of values to search for neighbors
+kNearest :: Eq a => Ord b =>
+            Int      -- ^Value of _k_ (the number of neighbors to find)
+         -> Dist a b -- ^Distance function (instance of 'Dist')
+         -> a        -- ^The value to search for the nearest neighbors to.
+         -> [a]      -- ^The list of values to search for neighbors
          -> [a]
 kNearest 0 _    _ _   = []
 kNearest k dist x xs  = findKNearest (k - 1) (delete nearest xs) [nearest]
     where nearest     = minimumBy minDist xs
-          minDist a b = compare (dist x a) (dist x b)
+          minDist y z = dist x y `compare` dist x z
           -- Performs the actual recursive search
           findKNearest k' xs' neighbors
               | k' == 0   = neighbors'
@@ -64,7 +64,7 @@ kNearest k dist x xs  = findKNearest (k - 1) (delete nearest xs) [nearest]
 --
 -- This should be a valid instance of 'Dist' and so can be used for finding the
 -- nearest neighbors of a 'String' using 'kNearest'.
-hammingDist :: Eq a => [a] -> [a]-> Int
+hammingDist :: Eq a => [a] -> [a] -> Int
 hammingDist a b
     | length a == length b = sum $ zipWith (curry same) a b
     | otherwise            = error "Length of both strings must be equal"
