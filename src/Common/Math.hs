@@ -14,8 +14,11 @@ and practice, but they may occasionally be useful.
 -}
 
 module Common.Math ( kNearest
+                   , Dist
+                   , lexicalDist
                    , hammingDist
-                   , kHammingNearest ) where
+                   , kHammingNearest
+                   ) where
 
 -------------------------------------------------------------------------------
 
@@ -25,12 +28,12 @@ import Data.Char
 
 -------------------------------------------------------------------------------
 
--- |Type for a distance function over `a`, returning the distance as a value
--- of type _b_ : Ord
+-- |Type for a distance function over 'b', returning the distance as a value
+-- of type 'b' : 'Ord'
 type Dist a b = Ord b => a -> a -> b
 
--- |Tail-recursive _k_-nearest-neighbor search over a list of `a`s,
--- where `a` is an instance of Eq.
+-- |Tail-recursive /k/-nearest-neighbor search over a list of 'a's,
+-- where 'a' is an instance of 'Eq'.
 --
 -- The resultant list should be sorted by nearness to the target, with
 -- the first element being the nearest neighbor and the last element being
@@ -40,8 +43,9 @@ type Dist a b = Ord b => a -> a -> b
 -- pre-processing the imputs.
 --
 -- Based on my Scala implementation at <https://github.com/hawkw/scala-common>.
-kNearest :: Eq a => Ord b =>
-            Int      -- ^Value of _k_ (the number of neighbors to find)
+kNearest :: Eq a     -- ^Type of the target values
+         => Ord b    -- ^Type of the distance value
+         => Int      -- ^Value of /k/ (the number of neighbors to find)
          -> Dist a b -- ^Distance function (instance of 'Dist')
          -> a        -- ^The value to search for the nearest neighbors to.
          -> [a]      -- ^The list of values to search for neighbors
@@ -63,7 +67,7 @@ kNearest k dist x xs  = findKNearest (k - 1) (delete nearest xs) [nearest]
 --
 -- The strings are required to be of equal length.
 --
--- This is e a valid instance of 'Dist' and so can be used for finding the
+-- This is a valid instance of 'Dist' and so can be used for finding the
 -- nearest neighbors of a list using 'kNearest'.
 hammingDist :: Eq a => [a] -> [a] -> Int
 hammingDist a b
@@ -80,15 +84,15 @@ lexicalDist a b
     | otherwise            = error "Length of both strings must be equal"
     where lexDist (x, y) = ord x - ord y
 
--- |Find the _k_ 'Strings' with the nearest Hamming distance
+-- |Find the /k/ 'List's with the nearest Hamming distance
 -- ('hammingDist') to the target.
 --
 -- This is just a batteries-included version of 'kNearest' for 'List's.
 --
 -- In order to compute Hamming distance, all the strings must be of equal
 -- length.
-kHammingNearest :: Eq a
-                => Int   -- ^Value of _k_ (the number of neighbors to find)
+kHammingNearest :: Eq a  -- ^Type of the target values
+                => Int   -- ^Value of /k/ (the number of neighbors to find)
                 -> [a]   -- ^Target to find the nearest neighbors of
                 -> [[a]] -- ^List of strings to search for neighbors
                 -> [[a]]
