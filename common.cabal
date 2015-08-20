@@ -2,11 +2,11 @@ name:                common
 version:             0.1.0.0
 synopsis:            Common general-purpose code.
 description:         Please see README.md
-homepage:            http://github.com/name/project
-license:             BSD3
+homepage:            http://github.com/hawkw/haskell-common
+license:             MIT
 license-file:        LICENSE
-author:              Your name here
-maintainer:          your.address@example.com
+author:              Hawk Weisman
+maintainer:          hi@hawkweisman.me
 -- copyright:
 category:            Web
 build-type:          Simple
@@ -30,4 +30,4 @@ test-suite common-test
 
 source-repository head
   type:     git
-  location: https://github.com/name/project
+  location: http://github.com/hawkw/haskell-common
